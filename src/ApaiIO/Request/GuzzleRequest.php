@@ -21,6 +21,7 @@ use ApaiIO\ApaiIO;
 use ApaiIO\Configuration\ConfigurationInterface;
 use ApaiIO\Operations\OperationInterface;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Uri;
 
 /**
@@ -72,7 +73,12 @@ class GuzzleRequest implements RequestInterface
         $request = new \GuzzleHttp\Psr7\Request('GET', $uri->withScheme($this->scheme), [
             'User-Agent' => 'ApaiIO [' . ApaiIO::VERSION . ']'
         ]);
-        $result = $this->client->send($request);
+        try {
+            $result = $this->client->send($request);
+        }
+        catch (RequestException $e) {
+            return NULL;
+        }
 
         return $result->getBody()->getContents();
     }
